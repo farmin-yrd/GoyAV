@@ -1,0 +1,18 @@
+version: '3'
+
+env:
+  IMAGE_NAME: goyav
+  TAG: 1.0
+  IMAGE: "{{.IMAGE_NAME}}:{{.TAG}}"
+
+tasks:
+  build_image:
+    cmds:
+      - task: rm_image
+      - docker build -f {{.USER_WORKING_DIR}}/resources/docker/Dockerfile -t $IMAGE {{.USER_WORKING_DIR}}/src
+      - docker tag $IMAGE localhost:5000/$IMAGE
+  
+  rm_image:
+    cmds:
+      - docker image inspect $IMAGE > /dev/null 2>&1 && docker image rm $IMAGE || echo "Image $IMAGE not found, skipping removal."
+      - docker image inspect localhost:5000/$IMAGE > /dev/null 2>&1 && docker image rm localhost:5000/$IMAGE || echo "Image localhost:5000/$IMAGE not found, skipping removal."
